@@ -175,7 +175,7 @@ class interface(object):
         self.LC4 = 1
         self.UC1 = 1
         self.UC3 = 1
-        self.AARD = 1
+        self.AARD = 0
         self.FIG1 = 1
         self.FIG3 = 1
         self.FIG4 = 1
@@ -209,7 +209,7 @@ class interface(object):
 
 ## aardvark strings
         self.w.line3 = HorizontalLine((padding, padding + increment * 13.45, -10, 1))
-        self.w.AARD = CheckBox((padding, padding + increment * 14, width, 20), "Aardvark Strings", callback=self.AARDCallback, value=True)
+        self.w.AARD = CheckBox((padding, padding + increment * 14, width, 20), "Aardvark Strings", callback=self.AARDCallback, value=False)
 
 ## figures
         self.w.line4 = HorizontalLine((padding, padding + increment * 15.45, -10, 1))
