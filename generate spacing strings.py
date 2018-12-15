@@ -3,7 +3,7 @@
 ## generate various spacing strings for you.
 ## Works in RoboFont, Glyphs, and DrawBot.
 ####################
-## Ethan Cohen, updated 12/14/18
+## Ethan Cohen, updated 12/15/18
 ####################
 
 from vanilla import *
@@ -152,7 +152,7 @@ class interface(object):
         self.w.uppercaseEntry.set(self.uppercase)
 
 ## figures entry
-        self.figures = "0123456789$€£"
+        self.figures = "0123456789$"
         self.w.figuresLabel = TextBox((padding, padding + increment * 2, -10, 20), "Enter figures:")
         self.w.figuresEntry = EditText((column, padding + increment * 2, -10, 19),
                             callback=self.figuresEntryCallback, sizeStyle="small")
