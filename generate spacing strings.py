@@ -3,7 +3,7 @@
 ## generate various spacing strings for you.
 ## Works in RoboFont, Glyphs, and DrawBot.
 ####################
-## Ethan Cohen, updated 12/15/18
+## Ethan Cohen, updated 03/17/19
 ####################
 
 from vanilla import *
@@ -52,10 +52,14 @@ def longStrings(charSet, ctrl1, ctrl2):
     txt += ctrl2 + ctrl2 + "\n"
     return txt
 
-def shortStrings(charSet, ctrl1, ctrl2):
-    txt = ""
+def shortStrings(charSet, ctrl1, ctrl2, intro=True):
+    if intro == True:
+        txt = ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + "\n" + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + "\n" + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl2 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + ctrl1 + "\n" + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl1 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + ctrl2 + "\n" + ctrl1 + ctrl1 + ctrl2 + ctrl1 + ctrl1 + ctrl2 + ctrl1 + ctrl2 + ctrl2 + ctrl1 + ctrl2 + ctrl2 + "\n"
+    else:
+        txt = ""
     for x in range(len(charSet)):
-        txt += ctrl1 + ctrl1 + charSet[x] + ctrl1 + ctrl1 + charSet[x] + ctrl2 + ctrl2 + charSet[x] + ctrl2 + ctrl2 + "\n"
+        if charSet[x] != ctrl1 and charSet[x] != ctrl2:
+            txt += ctrl1 + ctrl1 + charSet[x] + ctrl1 + ctrl1 + charSet[x] + ctrl2 + ctrl2 + charSet[x] + ctrl2 + ctrl2 + "\n"
     return txt    
 
 def betweenAll(charSet, figuresBetweenLetters=False):
@@ -135,7 +139,7 @@ class interface(object):
         increment = 20
         column = 150
         width = windowWidth - padding * 2
-        self.w = FloatingWindow((windowWidth, increment * 40), title="Copy Spacing Strings to Clipboard")
+        self.w = FloatingWindow((windowWidth, increment * 40), title="Generate Spacing Strings")
 
 ## lowercase entry
         self.lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -152,36 +156,37 @@ class interface(object):
         self.w.uppercaseEntry.set(self.uppercase)
 
 ## figures entry
-        self.figures = "0123456789$"
+        self.figures = "0123456789"
         self.w.figuresLabel = TextBox((padding, padding + increment * 2, -10, 20), "Enter figures:")
         self.w.figuresEntry = EditText((column, padding + increment * 2, -10, 19),
                             callback=self.figuresEntryCallback, sizeStyle="small")
         self.w.figuresEntry.set(self.figures)
 
 ## punctuation and symbols entry
-        self.symbols = ".,:;!?-–—‚„“”‘’@#*()~"
+        self.symbols = ".,:;"
         self.w.symbolsLabel = TextBox((padding, padding + increment * 3, -10, 20), "Enter punct/symbols:")
         self.w.symbolsEntry = EditText((column, padding + increment * 3, -10, 19),
                             callback=self.symbolsEntryCallback, sizeStyle="small")
         self.w.symbolsEntry.set(self.symbols)
 
 ####################
-## checkbox default values
+## Checkbox default values. This controls whether the spacing strings are actually getting generated.
+## The checked/unchecked appearance of the checkboxes in the UI is controlled in the CheckBox objects.
 ####################
 
         self.includeLabels = 0
-        self.LC1 = 1
+        self.LC1 = 0
         self.LC2 = 1
-        self.LC4 = 1
+        self.LC4 = 0
         self.UC1 = 1
-        self.UC3 = 1
+        self.UC3 = 0
         self.AARD = 0
-        self.FIG1 = 1
-        self.FIG3 = 1
-        self.FIG4 = 1
-        self.FIG6 = 1
-        self.SYMB1 = 1
-        self.SYMB3 = 1
+        self.FIG1 = 0
+        self.FIG3 = 0
+        self.FIG4 = 0
+        self.FIG6 = 0
+        self.SYMB1 = 0
+        self.SYMB3 = 0
 
 
 ####################
@@ -193,19 +198,19 @@ class interface(object):
         self.w.deselectAll = Button((padding + width * 0.51, padding + increment * 4.9, width * 0.49, 20), "Deselect All", callback=self.deselectAllCallback)
 
 ####################
-## checkboxes
+## CheckBox objects
 ####################
 
 ## lowercase
         self.w.line1 = HorizontalLine((padding, padding + increment * 6.45, -10, 1))
-        self.w.LC1 = CheckBox((padding, padding + increment * 7, width, 20), "LC Sequence", callback=self.LC1Callback, value=True)
+        self.w.LC1 = CheckBox((padding, padding + increment * 7, width, 20), "LC Sequence", callback=self.LC1Callback, value=False)
         self.w.LC2 = CheckBox((padding, padding + increment * 8, width, 20), "LC between n and o", callback=self.LC2Callback, value=True)
-        self.w.LC4 = CheckBox((padding, padding + increment * 9, width, 20), "All LC between all LC", callback=self.LC4Callback, value=True)
+        self.w.LC4 = CheckBox((padding, padding + increment * 9, width, 20), "All LC between all LC", callback=self.LC4Callback, value=False)
 
 ## uppercase
         self.w.line2 = HorizontalLine((padding, padding + increment * 10.45, -10, 1))
         self.w.UC1 = CheckBox((padding, padding + increment * 11, width, 20), "UC between H and O", callback=self.UC1Callback, value=True)
-        self.w.UC3 = CheckBox((padding, padding + increment * 12, width, 20), "All UC between all UC", callback=self.UC3Callback, value=True)
+        self.w.UC3 = CheckBox((padding, padding + increment * 12, width, 20), "All UC between all UC", callback=self.UC3Callback, value=False)
 
 ## aardvark strings
         self.w.line3 = HorizontalLine((padding, padding + increment * 13.45, -10, 1))
@@ -213,15 +218,15 @@ class interface(object):
 
 ## figures
         self.w.line4 = HorizontalLine((padding, padding + increment * 15.45, -10, 1))
-        self.w.FIG1 = CheckBox((padding, padding + increment * 16, width, 20), "Figures between 0 and 1", callback=self.FIG1Callback, value=True)
-        self.w.FIG3 = CheckBox((padding, padding + increment * 17, width, 20), "All figures between all figures", callback=self.FIG3Callback, value=True)
-        self.w.FIG4 = CheckBox((padding, padding + increment * 18, width, 20), "Figures between n and o", callback=self.FIG4Callback, value=True)
-        self.w.FIG6 = CheckBox((padding, padding + increment * 19, width, 20), "Figures between H and O", callback=self.FIG6Callback, value=True)
+        self.w.FIG1 = CheckBox((padding, padding + increment * 16, width, 20), "Figures between 0 and 1", callback=self.FIG1Callback, value=False)
+        self.w.FIG3 = CheckBox((padding, padding + increment * 17, width, 20), "All figures between all figures", callback=self.FIG3Callback, value=False)
+        self.w.FIG4 = CheckBox((padding, padding + increment * 18, width, 20), "Figures between n and o", callback=self.FIG4Callback, value=False)
+        self.w.FIG6 = CheckBox((padding, padding + increment * 19, width, 20), "Figures between H and O", callback=self.FIG6Callback, value=False)
         
 ## punctuation & symbols
         self.w.line5 = HorizontalLine((padding, padding + increment * 20.45, -10, 1))
-        self.w.SYMB1 = CheckBox((padding, padding + increment * 21, width, 20), "Punctuation/symbols between n and o", callback=self.SYMB1Callback, value=True)
-        self.w.SYMB3 = CheckBox((padding, padding + increment * 22, width, 20), "Punctuation/symbols between H and O", callback=self.SYMB3Callback, value=True)
+        self.w.SYMB1 = CheckBox((padding, padding + increment * 21, width, 20), "Punctuation/symbols between n and o", callback=self.SYMB1Callback, value=False)
+        self.w.SYMB3 = CheckBox((padding, padding + increment * 22, width, 20), "Punctuation/symbols between H and O", callback=self.SYMB3Callback, value=False)
 
 ## other
         self.w.line6 = HorizontalLine((padding, padding + increment * 23.45, -10, 1))
@@ -373,7 +378,7 @@ class interface(object):
         if self.LC2 == 1:
             if self.includeLabels == 1:
                 txt += "LC between n and o\n\n"
-            txt += shortStrings(self.lowercase, "n", "o") + "\n" + longStrings(self.lowercase, "n", "o") + "\n\n"
+            txt += shortStrings(self.lowercase, "n", "o") + "\n\n"
         if self.LC4 == 1:
             if self.includeLabels == 1:
                 txt += "All LC between all LC\n\n"
@@ -381,7 +386,7 @@ class interface(object):
         if self.UC1 == 1:
             if self.includeLabels == 1:
                 txt += "UC between H and O\n\n"
-            txt += shortStrings(self.uppercase, "H", "O") + "\n" + longStrings(self.uppercase, "H", "O") + "\n\n"
+            txt += shortStrings(self.uppercase, "H", "O") + "\n\n"
         if self.UC3 == 1:
             if self.includeLabels == 1:
                 txt += "All UC between all UC\n\n"
@@ -393,7 +398,7 @@ class interface(object):
         if self.FIG1 == 1:
             if self.includeLabels == 1:
                 txt += "Figures between 0 and 1\n\n"
-            txt += shortStrings(self.figures, "0", "1") + "\n" + longStrings(self.figures, "0", "1") + "\n\n"
+            txt += shortStrings(self.figures, "0", "1") + "\n\n"
         if self.FIG3 == 1:
             if self.includeLabels == 1:
                 txt += "All figures between all figures\n\n"
@@ -401,19 +406,19 @@ class interface(object):
         if self.FIG4 == 1:
             if self.includeLabels == 1:
                 txt += "Figures between n and o\n\n"
-            txt += shortStrings(self.figures, "n", "o") + "\n" + longStrings(self.figures, "n", "o") + "\n\n"
+            txt += shortStrings(self.figures, "n", "o", False) + "\n" + longStrings(self.figures, "n", "o") + "\n\n"
         if self.FIG6 == 1:
             if self.includeLabels == 1:
                 txt += "Figures between H and O\n\n"
-            txt += shortStrings(self.figures, "H", "O") + "\n" + longStrings(self.figures, "H", "O") + "\n\n"
+            txt += shortStrings(self.figures, "H", "O", False) + "\n" + longStrings(self.figures, "H", "O") + "\n\n"
         if self.SYMB1 == 1:
             if self.includeLabels == 1:
                 txt += "Punctuation/symbols between n and o\n\n"
-            txt += shortStrings(self.symbols, "n", "o") + "\n" + longStrings(self.symbols, "n", "o") + "\n\n"
+            txt += shortStrings(self.symbols, "n", "o", False) + "\n" + longStrings(self.symbols, "n", "o") + "\n\n"
         if self.SYMB3 == 1:
             if self.includeLabels == 1:
                 txt += "Punctuation/symbols between H and O\n\n"
-            txt += shortStrings(self.symbols, "H", "O") + "\n" + longStrings(self.symbols, "H", "O")
+            txt += shortStrings(self.symbols, "H", "O", False) + "\n" + longStrings(self.symbols, "H", "O")
         return txt
         
 ## copy selection to clipboard
